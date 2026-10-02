@@ -45,7 +45,7 @@ Iesniegumos bieži ir nepareizi personas kodi. Sistēmai jāpārbauda, vai perso
 | Vai kļūdas ziņojumā drīkst atkārtot ievadīto kodu? | Nē. Ne atbildē, ne žurnālā. Tikai lauka nosaukums un kļūdas kods. | Produkta īpašnieks, 2026-09-30 |
 | Vai mainās atbildes shēma? | Nē. | Produkta īpašnieks, 2026-09-30 |
 
-## Ārpus apjoma (out of scope)
+## Ārpus tvēruma (out of scope)
 
 - Kontrolcipara un dzimšanas datuma pārbaude
 - Pārbaude reģistrā, vai persona eksistē (CR-2)

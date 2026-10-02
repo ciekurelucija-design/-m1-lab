@@ -37,9 +37,9 @@ Dažreiz atbildes tiek sūtītas pa e-pastu cilvēkiem, kuriem ir aktivizēta of
 | Jautājums | Atbilde | Kas atbildēja, kad |
 |---|---|---|
 | Vai 404 nozīmē, ka personas nav? | Nē. Tas nozīmē, ka reģistrā nav ieraksta. Rīkojamies kā ar `NOT_ACTIVATED`. | Juridiskā nodaļa, 2026-09-29 |
-| Kas notiek ar `PENDING_CHANNEL_CHECK`? | Darbinieks pārbauda kanālu vēlāk. Automātiskā atkārtošana ir ārpus apjoma. | Produkta īpašnieks, 2026-09-29 |
+| Kas notiek ar `PENDING_CHANNEL_CHECK`? | Darbinieks pārbauda kanālu vēlāk. Automātiskā atkārtošana ir ārpus tvēruma. | Produkta īpašnieks, 2026-09-29 |
 
-## Ārpus apjoma (out of scope)
+## Ārpus tvēruma (out of scope)
 
 - Automātiska atkārtota pārbaude `PENDING_CHANNEL_CHECK` iesniegumiem
 - Atbildes nosūtīšana

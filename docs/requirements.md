@@ -14,7 +14,7 @@
 
 ## Atbildes termiņš (vienkāršots noteikums)
 
-Viens kalendārais mēnesis no saņemšanas dienas. Ja tādas dienas mēnesī nav, mēneša pēdējā diena. Ja rezultāts ir brīvdiena vai svētku diena, nākamā darba diena. Svētku dienas: `app/data/holidays_lv.json` (2026–2027). Pārceltās darba dienas ir ārpus apjoma.
+Viens kalendārais mēnesis no saņemšanas dienas. Ja tādas dienas mēnesī nav, mēneša pēdējā diena. Ja rezultāts ir brīvdiena vai svētku diena, nākamā darba diena. Svētku dienas: `app/data/holidays_lv.json` (2026–2027). Pārceltās darba dienas ir ārpus tvēruma.
 
 ## Izmaiņu pieprasījumi
 

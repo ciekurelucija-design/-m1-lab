@@ -36,7 +36,7 @@ Darbiniekam vajag iesniegumu sarakstu, ko var filtrēt pēc statusa un tēmas. �
 |---|---|---|
 | Vai sarakstā rādīt `fullName` un `body`? | **Atvērts.** Jālemj datu aizsardzības speciālistam. | — |
 
-## Ārpus apjoma (out of scope)
+## Ārpus tvēruma (out of scope)
 
 - Autentifikācija un lomas. **Prototipā to nav. Ražošanas vidē tās ir obligātas.**
 - Lapošana (pagination)

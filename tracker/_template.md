@@ -32,7 +32,7 @@ data_check: "<kas pārbaudīts pirms eksporta>"
 |---|---|---|
 | | | |
 
-## Ārpus apjoma (out of scope)
+## Ārpus tvēruma (out of scope)
 
 - 
 

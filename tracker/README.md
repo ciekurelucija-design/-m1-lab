@@ -17,7 +17,7 @@ Pieteikums ir `READY`, ja:
 - pieņemšanas kritēriji (acceptance criteria) ir tabulā, un tajā ir negatīvie gadījumi;
 - precizējumi ir pierakstīti kopā ar atbildētāju;
 - ir saite uz API līgumu (API contract) laukā `contract`;
-- sadaļa "Ārpus apjoma" ir aizpildīta;
+- sadaļa "Ārpus tvēruma" ir aizpildīta;
 - lauks `data_check` ir aizpildīts.
 
 ## Statusi

@@ -35,7 +35,7 @@ Iedzīvotāji bieži raksta par parkiem, bet šādas tēmas nav, tāpēc iesnieg
 |---|---|---|
 | Vai `OTHER` paliek saraksta beigās? | Jā | Produkta īpašnieks, 2026-10-01 |
 
-## Ārpus apjoma (out of scope)
+## Ārpus tvēruma (out of scope)
 
 - Tēmu pārvaldība (pievienošana bez koda izmaiņām)
 - Tēmu tulkojumi citās valodās
