@@ -19,6 +19,7 @@ from app.models import (
     Submission,
     SubmissionCreate,
     SubmissionCreated,
+    SubmissionListItem,
     SubmissionStatus,
     SubmissionStatusInfo,
     Topic,
@@ -93,6 +94,18 @@ def create_submission(
         }
     )
     return SubmissionCreated(**record)
+
+
+@app.get(
+    "/submissions",
+    response_model=list[SubmissionListItem],
+    tags=["Iesniegumi"],
+)
+def list_submissions(
+    status: str | None = None, topic: str | None = None
+) -> list[SubmissionListItem]:
+    records = storage.list_submissions(status=status, topic=topic)
+    return [SubmissionListItem(**record) for record in records]
 
 
 @app.get(
