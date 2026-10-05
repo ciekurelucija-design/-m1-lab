@@ -68,3 +68,21 @@ def test_ui_is_served(client):
     response = client.get("/ui/")
     assert response.status_code == 200
     assert "Iesniegums" in response.text
+
+
+def test_unexpected_error_hides_details(valid_payload, monkeypatch):
+    from fastapi.testclient import TestClient
+
+    from app import storage
+    from app.main import app
+
+    def broken_add(data):
+        raise RuntimeError("iekšēja kļūda 32000000101")
+
+    monkeypatch.setattr(storage, "add", broken_add)
+    client = TestClient(app, raise_server_exceptions=False)
+    response = client.post("/submissions", json=valid_payload)
+    assert response.status_code == 500
+    assert response.json() == {
+        "error": {"code": "INTERNAL_ERROR", "message": "Internal server error"}
+    }

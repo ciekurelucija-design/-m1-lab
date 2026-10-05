@@ -47,4 +47,5 @@ def register_error_handlers(app: FastAPI) -> None:
 
     @app.exception_handler(Exception)
     async def unexpected_error(request: Request, exc: Exception):
-        return error_response(500, "INTERNAL_ERROR", str(exc))
+        # Izņēmuma tekstu neatgriežam: tajā var būt iekšēja info vai personas dati.
+        return error_response(500, "INTERNAL_ERROR", "Internal server error")

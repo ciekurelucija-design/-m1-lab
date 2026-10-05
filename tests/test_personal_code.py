@@ -77,3 +77,12 @@ def test_omd_receives_normalized_code(client, valid_payload, fake_omd):
     valid_payload["personalCode"] = " 320000-00001 "
     client.post("/submissions", json=valid_payload)
     assert fake_omd.calls == ["32000000001"]
+
+
+def test_accepted_submission_log_has_only_id(client, valid_payload, caplog):
+    # Līgums: žurnālā iesnieguma ID, nekad personas kodu vai iesnieguma tekstu
+    with caplog.at_level(logging.INFO):
+        response = client.post("/submissions", json=valid_payload)
+    assert response.json()["id"] in caplog.text
+    assert valid_payload["personalCode"] not in caplog.text
+    assert valid_payload["body"] not in caplog.text
