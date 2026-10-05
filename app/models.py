@@ -85,6 +85,15 @@ class SubmissionStatusInfo(BaseModel):
     dueDate: date
 
 
+class SubmissionListItem(BaseModel):
+    id: str
+    status: SubmissionStatus
+    topic: Topic
+    receivedAt: datetime
+    dueDate: date
+    replyChannel: ReplyChannel
+
+
 class Health(BaseModel):
     status: str
     version: str

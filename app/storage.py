@@ -6,6 +6,11 @@ Pēc restarta dati atgriežas sākuma stāvoklī ar trim sintētiskiem iesniegum
 import sqlite3
 import threading
 
+from app.models import SubmissionStatus, Topic
+
+ALLOWED_STATUSES = frozenset(s.value for s in SubmissionStatus)
+ALLOWED_TOPICS = frozenset(t.value for t in Topic)
+
 COLUMNS = (
     "id",
     "personalCode",
@@ -125,6 +130,27 @@ def add(data: dict) -> dict:
         record = {**data, "id": f"IES-2026-{seq:06d}"}
         _conn.execute(_INSERT, [record.get(column) for column in COLUMNS])
     return record
+
+
+def list_submissions(status: str | None = None, topic: str | None = None) -> list:
+    # Filtrus pārbauda pret atļauto sarakstu, vērtības nodod kā parametrus.
+    where = "1=1"
+    params: list[str] = []
+    if status:
+        if status not in ALLOWED_STATUSES:
+            raise ValueError("Nederīgs statusa filtrs")
+        where += " AND status = ?"
+        params.append(status)
+    if topic:
+        if topic not in ALLOWED_TOPICS:
+            raise ValueError("Nederīgs tēmas filtrs")
+        where += " AND topic = ?"
+        params.append(topic)
+    with _lock:
+        rows = _conn.execute(
+            f"SELECT * FROM submissions WHERE {where} ORDER BY seq", params
+        ).fetchall()
+    return [{column: row[column] for column in COLUMNS} for row in rows]
 
 
 def get(submission_id: str) -> dict | None:
