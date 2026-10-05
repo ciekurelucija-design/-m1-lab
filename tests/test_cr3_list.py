@@ -68,3 +68,22 @@ def test_list_status_and_topic_combined(client):
     items = response.json()
     assert items
     assert all(i["status"] == "RECEIVED" and i["topic"] == "ROADS" for i in items)
+
+
+LIST_FIELDS = {"id", "status", "topic", "receivedAt", "dueDate", "replyChannel"}
+
+
+def test_list_item_has_only_contract_fields(client):
+    # Līgums: SubmissionListItem "Tikai šie lauki", bez personas datiem.
+    storage.reset()
+    items = client.get("/submissions").json()
+    assert items
+    assert all(set(item) == LIST_FIELDS for item in items)
+
+
+def test_staff_page_does_not_show_personal_data():
+    from pathlib import Path
+
+    page = (Path(__file__).parent.parent / "ui" / "darbinieks.html").read_text()
+    assert "fullName" not in page
+    assert "s.body" not in page

@@ -92,8 +92,6 @@ class SubmissionListItem(BaseModel):
     receivedAt: datetime
     dueDate: date
     replyChannel: ReplyChannel
-    fullName: str
-    body: str
 
 
 class Health(BaseModel):
