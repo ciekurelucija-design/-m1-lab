@@ -3,7 +3,9 @@
 from datetime import date, datetime
 from enum import Enum
 
-from pydantic import BaseModel
+from pydantic import BaseModel, field_validator
+
+from app.personal_code import normalize_personal_code
 
 
 class PreferredChannel(str, Enum):
@@ -57,6 +59,11 @@ class SubmissionCreate(BaseModel):
     topic: Topic
     subject: str
     body: str
+
+    @field_validator("personalCode")
+    @classmethod
+    def check_personal_code(cls, value: str) -> str:
+        return normalize_personal_code(value)
 
 
 class SubmissionCreated(BaseModel):
