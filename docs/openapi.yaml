@@ -22,7 +22,7 @@ servers:
     description: Lokālais prototips (Codespace)
 tags:
   - name: Iesniegumi
-    description: Iesnieguma pieņemšana un apskate (R1–R3, CR-2, CR-3)
+    description: Iesnieguma pieņemšana un apskate (R1–R3, CR-2, CR-3, CR-4)
   - name: Klasifikatori
     description: Tēmu saraksts (CR-0)
   - name: Sistēma
@@ -168,6 +168,33 @@ paths:
         '404':
           $ref: '#/components/responses/NotFound'
 
+  /submissions/{id}/status:
+    get:
+      tags: [Iesniegumi]
+      operationId: getSubmissionStatus
+      summary: Iesnieguma statuss iedzīvotājam (CR-4)
+      description: |
+        Publisks galapunkts: iedzīvotājs pēc iesnieguma numura uzzina statusu
+        un atbildes termiņu. Atbildē ir tikai `id`, `status` un `dueDate`:
+        bez personas koda, vārda, e-pasta un iesnieguma teksta.
+      parameters:
+        - name: id
+          in: path
+          required: true
+          description: Iesnieguma ID
+          schema:
+            type: string
+            example: IES-2026-000123
+      responses:
+        '200':
+          description: Iesniegums atrasts
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/SubmissionStatusInfo'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
 components:
   schemas:
     Health:
@@ -280,6 +307,22 @@ components:
           format: date
         replyChannel:
           $ref: '#/components/schemas/ReplyChannel'
+
+    SubmissionStatusInfo:
+      description: Iesnieguma statuss iedzīvotājam (CR-4). Tikai šie lauki.
+      type: object
+      required: [id, status, dueDate]
+      properties:
+        id:
+          type: string
+          example: IES-2026-000123
+        status:
+          $ref: '#/components/schemas/SubmissionStatus'
+        dueDate:
+          type: string
+          format: date
+          description: Atbildes termiņš
+          example: '2026-11-02'
 
     PreferredChannel:
       type: string
