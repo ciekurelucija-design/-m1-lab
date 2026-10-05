@@ -1,0 +1,158 @@
+<!doctype html>
+<html lang="lv">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Iesnieguma statuss · Ezermalas novada pašvaldība</title>
+  <style>
+    :root {
+      --navy: #1D3557;
+      --teal: #2A9D8F;
+      --coral: #E76F51;
+      --bg: #F1F3F5;
+      --line: #C9CED6;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg);
+      color: #1a1a1a;
+    }
+    header { background: var(--navy); color: #fff; padding: 16px; }
+    header h1 { margin: 0; font-size: 1.25rem; }
+    header p { margin: 4px 0 0; font-size: 0.85rem; opacity: 0.85; }
+    main { max-width: 720px; margin: 0 auto; padding: 16px; }
+    .card { background: #fff; border: 1px solid var(--line); border-radius: 8px; padding: 16px; margin-bottom: 16px; }
+    label { display: block; font-weight: 600; margin-top: 12px; }
+    .hint { font-size: 0.85rem; color: #555; margin-top: 4px; }
+    input {
+      width: 100%; padding: 8px; margin-top: 4px; font: inherit;
+      border: 1px solid var(--line); border-radius: 6px; background: #fff;
+    }
+    .field-error { color: var(--coral); font-size: 0.9rem; margin-top: 4px; min-height: 1em; }
+    .invalid { border-color: var(--coral); }
+    button {
+      margin-top: 16px; padding: 10px 20px; font: inherit; font-weight: 600;
+      color: #fff; background: var(--teal); border: 0; border-radius: 6px; cursor: pointer;
+    }
+    button:disabled { opacity: 0.6; cursor: wait; }
+    .message { padding: 12px; border-radius: 6px; margin-top: 16px; }
+    .message.error { background: #fdece7; border: 1px solid var(--coral); }
+    .message.ok { background: #e6f4f2; border: 1px solid var(--teal); }
+    dl { display: grid; grid-template-columns: max-content 1fr; gap: 6px 16px; margin: 8px 0 0; }
+    dt { font-weight: 600; }
+    dd { margin: 0; }
+    footer { font-size: 0.8rem; color: #555; text-align: center; padding: 16px; }
+    a { color: var(--navy); }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>Ezermalas novada pašvaldība · Iesnieguma statuss</h1>
+    <p>Mācību prototips. Pašvaldība ir izdomāta. Visi dati ir sintētiski.</p>
+  </header>
+
+  <main>
+    <form id="status-form" class="card" novalidate>
+      <label for="submissionId">Iesnieguma numurs</label>
+      <input id="submissionId" name="submissionId" autocomplete="off" placeholder="IES-2026-000123">
+      <div class="hint">Numuru saņēmāt pēc iesnieguma iesniegšanas.</div>
+      <div class="field-error" data-for="submissionId"></div>
+
+      <button type="submit" id="submit">Pārbaudīt statusu</button>
+      <div id="message" aria-live="polite"></div>
+    </form>
+  </main>
+
+  <footer>
+    <a href="/ui/">Iesniegt iesniegumu</a> · <a href="/docs">Swagger UI (/docs)</a> · Ezermalas pieteikumu sistēma · mācību prototips
+  </footer>
+
+  <script>
+    const STATUS_TEXT = {
+      RECEIVED: "Saņemts",
+      IN_PROGRESS: "Izskatīšanā",
+      FORWARDED: "Pārsūtīts",
+      ANSWERED: "Atbildēts",
+      WITHDRAWN: "Atsaukts",
+    };
+    const NOT_FOUND_TEXT = "Iesniegums ar šādu numuru nav atrasts. Pārbaudiet numuru.";
+
+    const form = document.getElementById("status-form");
+    const input = document.getElementById("submissionId");
+    const fieldError = document.querySelector('.field-error[data-for="submissionId"]');
+    const message = document.getElementById("message");
+    const submitButton = document.getElementById("submit");
+
+    function formatDate(isoDate) {
+      const [year, month, day] = isoDate.split("-");
+      return `${day}.${month}.${year}`;
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text == null ? "" : String(text);
+      return div.innerHTML;
+    }
+
+    function clearErrors() {
+      fieldError.textContent = "";
+      input.classList.remove("invalid");
+      message.className = "";
+      message.innerHTML = "";
+    }
+
+    function showError(text) {
+      message.className = "message error";
+      message.textContent = text;
+    }
+
+    function showResult(data) {
+      message.className = "message ok";
+      message.innerHTML = `
+        <dl>
+          <dt>Numurs</dt><dd>${escapeHtml(data.id)}</dd>
+          <dt>Statuss</dt><dd>${escapeHtml(STATUS_TEXT[data.status] || data.status)}</dd>
+          <dt>Atbildes termiņš</dt><dd>${escapeHtml(formatDate(data.dueDate))}</dd>
+        </dl>`;
+    }
+
+    async function checkStatus(id) {
+      clearErrors();
+      if (!id) {
+        fieldError.textContent = "Obligāts lauks";
+        input.classList.add("invalid");
+        return;
+      }
+      submitButton.disabled = true;
+      try {
+        const response = await fetch(`/submissions/${encodeURIComponent(id)}/status`);
+        if (response.ok) {
+          showResult(await response.json());
+        } else if (response.status === 404) {
+          showError(NOT_FOUND_TEXT);
+        } else {
+          showError(`Statusu neizdevās iegūt (HTTP ${response.status}).`);
+        }
+      } catch (error) {
+        showError("Neizdevās sazināties ar serveri.");
+      } finally {
+        submitButton.disabled = false;
+      }
+    }
+
+    form.addEventListener("submit", (event) => {
+      event.preventDefault();
+      checkStatus(input.value.trim().toUpperCase());
+    });
+
+    // Saite no citas lapas: statuss.html?id=IES-2026-000123
+    const initialId = new URLSearchParams(location.search).get("id");
+    if (initialId) {
+      input.value = initialId;
+      checkStatus(initialId.trim().toUpperCase());
+    }
+  </script>
+</body>
+</html>
