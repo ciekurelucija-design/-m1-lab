@@ -77,6 +77,14 @@ class Submission(SubmissionCreated, SubmissionCreate):
     pass
 
 
+class SubmissionStatusInfo(BaseModel):
+    """CR-4: publisks statuss iedzīvotājam, bez personas datiem."""
+
+    id: str
+    status: SubmissionStatus
+    dueDate: date
+
+
 class Health(BaseModel):
     status: str
     version: str

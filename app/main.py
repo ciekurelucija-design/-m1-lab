@@ -20,6 +20,7 @@ from app.models import (
     SubmissionCreate,
     SubmissionCreated,
     SubmissionStatus,
+    SubmissionStatusInfo,
     Topic,
     TopicItem,
 )
@@ -105,6 +106,19 @@ def get_submission(submission_id: str) -> Submission:
     if record is None:
         raise SubmissionNotFound()
     return Submission(**record)
+
+
+@app.get(
+    "/submissions/{submission_id}/status",
+    response_model=SubmissionStatusInfo,
+    responses={404: {"model": Error}},
+    tags=["Iesniegumi"],
+)
+def get_submission_status(submission_id: str) -> SubmissionStatusInfo:
+    record = storage.get(submission_id)
+    if record is None:
+        raise SubmissionNotFound()
+    return SubmissionStatusInfo(**record)
 
 
 app.mount("/ui", StaticFiles(directory=UI_DIR, html=True), name="ui")
