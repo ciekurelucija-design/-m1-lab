@@ -19,6 +19,8 @@
     th, td { text-align: left; padding: 8px; border-bottom: 1px solid var(--line); vertical-align: top; }
     th { background: #e8ecf1; }
     .count { margin-top: 12px; color: #444; }
+    .count.error { color: #E76F51; font-weight: 600; }
+    .table-wrap { overflow-x: auto; }
   </style>
 </head>
 <body>
@@ -27,7 +29,14 @@
     <form class="filters" id="filters">
       <div>
         <label for="status">Statuss</label>
-        <input id="status" name="status" placeholder="piemēram, RECEIVED">
+        <select id="status" name="status">
+          <option value="">Visi</option>
+          <option value="RECEIVED">Saņemts</option>
+          <option value="IN_PROGRESS">Izskatīšanā</option>
+          <option value="FORWARDED">Pārsūtīts</option>
+          <option value="ANSWERED">Atbildēts</option>
+          <option value="WITHDRAWN">Atsaukts</option>
+        </select>
       </div>
       <div>
         <label for="topic">Tēma</label>
@@ -43,16 +52,36 @@
       <button type="submit">Meklēt</button>
     </form>
     <div class="count" id="count"></div>
+    <div class="table-wrap">
     <table>
       <thead>
         <tr><th>Numurs</th><th>Statuss</th><th>Tēma</th><th>Saņemts</th><th>Termiņš</th><th>Kanāls</th></tr>
       </thead>
       <tbody id="rows"></tbody>
     </table>
+    </div>
   </main>
   <script>
     const rows = document.getElementById("rows");
     const count = document.getElementById("count");
+
+    const STATUS = { RECEIVED: "Saņemts", IN_PROGRESS: "Izskatīšanā", FORWARDED: "Pārsūtīts", ANSWERED: "Atbildēts", WITHDRAWN: "Atsaukts" };
+    const TOPIC = { ROADS: "Ceļi un ielas", WASTE: "Atkritumi", PLANNING: "Teritorijas plānošana", PARKS: "Parki un skvēri", OTHER: "Cits" };
+    const CHANNEL = { EMAIL: "E-pasts", POST: "Pasts", E_ADDRESS: "E-adrese", PENDING_CHANNEL_CHECK: "Jāpārbauda" };
+    const ERROR_TEXT = "Neizdevās ielādēt datus. Mēģiniet vēlreiz.";
+
+    // GGGG-MM-DD vai ISO laiks → DD.MM.GGGG
+    function formatDate(value) {
+      if (!value) return "";
+      const [y, m, d] = value.slice(0, 10).split("-");
+      return `${d}.${m}.${y}`;
+    }
+
+    function showError() {
+      rows.innerHTML = "";
+      count.textContent = ERROR_TEXT;
+      count.classList.add("error");
+    }
 
     function cell(text) {
       const td = document.createElement("td");
@@ -67,17 +96,22 @@
       const topic = document.getElementById("topic").value;
       if (status) params.set("status", status);
       if (topic) params.set("topic", topic);
-      const response = await fetch("/submissions?" + params.toString());
-      const data = await response.json();
-      rows.innerHTML = "";
-      if (!Array.isArray(data)) {
-        count.textContent = "Kļūda: " + JSON.stringify(data);
-        return;
+      let data;
+      try {
+        const response = await fetch("/submissions?" + params.toString());
+        if (!response.ok) return showError();
+        data = await response.json();
+      } catch {
+        return showError();
       }
+      if (!Array.isArray(data)) return showError();
+      rows.innerHTML = "";
+      count.classList.remove("error");
       count.textContent = "Atrasti: " + data.length;
       for (const s of data) {
         const tr = document.createElement("tr");
-        [s.id, s.status, s.topic, s.receivedAt.slice(0, 10), s.dueDate, s.replyChannel]
+        [s.id, STATUS[s.status] || s.status, TOPIC[s.topic] || s.topic,
+         formatDate(s.receivedAt), formatDate(s.dueDate), CHANNEL[s.replyChannel] || s.replyChannel]
           .forEach((value) => tr.appendChild(cell(value)));
         rows.appendChild(tr);
       }

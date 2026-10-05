@@ -87,3 +87,16 @@ def test_staff_page_does_not_show_personal_data():
     page = (Path(__file__).parent.parent / "ui" / "darbinieks.html").read_text()
     assert "fullName" not in page
     assert "s.body" not in page
+
+
+def test_staff_page_follows_ui_rules():
+    from pathlib import Path
+
+    page = (Path(__file__).parent.parent / "ui" / "darbinieks.html").read_text()
+    # Kļūdas: vienots teksts, bez tehniskā satura.
+    assert "Neizdevās ielādēt datus. Mēģiniet vēlreiz." in page
+    assert "JSON.stringify" not in page
+    # Statusi latviski, datumi DD.MM.GGGG.
+    for label in ["Saņemts", "Izskatīšanā", "Pārsūtīts", "Atbildēts", "Atsaukts"]:
+        assert label in page
+    assert "${d}.${m}.${y}" in page
